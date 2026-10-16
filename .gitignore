@@ -1,0 +1,12 @@
+.gradle/
+build/
+run/
+.idea/
+*.iml
+.tooling/
+.vscode/
+.DS_Store
+*.log
+hs_err_pid*
+.env
+.env.*

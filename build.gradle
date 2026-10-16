@@ -1,0 +1,45 @@
+plugins {
+    id 'fabric-loom' version '1.8.13'
+    id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+base { archivesName = project.archives_base_name }
+loom { accessWidenerPath = file('src/main/resources/builddraft.accesswidener') }
+
+repositories { mavenCentral() }
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    // Optional local Iris/Sodium installation for compatibility checks; not bundled in releases.
+    if (providers.gradleProperty('shaderTestMods').isPresent()) {
+        modRuntimeOnly fileTree(dir: providers.gradleProperty('shaderTestMods').get(), includes: ['iris-*.jar', 'sodium-*.jar'])
+        runtimeOnly fileTree(dir: providers.gradleProperty('shaderTestMods').get(), include: 'libraries/*.jar')
+    }
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testImplementation 'com.google.code.gson:gson:2.10.1'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') { expand version: project.version }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 17
+}
+java { withSourcesJar() }
+test { useJUnitPlatform() }
+
+if (providers.gradleProperty('shaderTestLwjgl').isPresent()) {
+    // Allow offline shader checks with the launcher's matching LWJGL Java/native jars.
+    tasks.named('runClient') {
+        classpath = classpath.filter { !it.name.startsWith('lwjgl-') } + fileTree(dir: providers.gradleProperty('shaderTestLwjgl').get(), include: '*.jar')
+    }
+}

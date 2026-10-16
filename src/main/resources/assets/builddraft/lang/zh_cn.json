@@ -1,0 +1,17 @@
+{
+  "category.builddraft": "筑稿 · 建造辅助",
+  "key.builddraft.editor": "打开/关闭俯视草稿编辑器",
+  "key.builddraft.projection": "显示/隐藏蓝图投影",
+  "key.builddraft.anchor": "将蓝图移到准星位置",
+  "key.builddraft.preview": "实景 / 虚影预览",
+  "key.builddraft.down": "编辑器：下一层",
+  "key.builddraft.up": "编辑器：上一层",
+  "key.builddraft.tool": "编辑器：单格 / 矩形工具",
+  "key.builddraft.rotate": "编辑器：旋转画笔方块",
+  "key.builddraft.sample": "编辑器：吸取方块",
+  "key.builddraft.palette": "编辑器：打开方块库",
+  "key.builddraft.center": "编辑器：视角居中",
+  "key.builddraft.plane": "编辑器：锁定 / 释放建造平面",
+  "key.builddraft.extrude": "编辑器：拉伸工具",
+  "key.builddraft.move_grid": "编辑器：移动辅助网格"
+}
