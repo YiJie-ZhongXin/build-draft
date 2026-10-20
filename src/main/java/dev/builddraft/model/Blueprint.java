@@ -15,6 +15,13 @@ public final class Blueprint {
 
     public Map<GridPos, BlockSpec> blocks() { return Collections.unmodifiableMap(blocks); }
     public long revision() { return revision; }
+    public boolean canUndo() { return !undo.isEmpty(); }
+    public boolean canRedo() { return !redo.isEmpty(); }
+    public void clear() {
+        Map<GridPos, BlockSpec> erase = new LinkedHashMap<>();
+        blocks.keySet().forEach(pos -> erase.put(pos, null));
+        edit(erase);
+    }
     public boolean contains(GridPos p) {
         return inBounds(p);
     }

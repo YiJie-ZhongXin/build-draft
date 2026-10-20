@@ -2,6 +2,6 @@
   "required": true,
   "package": "dev.builddraft.mixin",
   "compatibilityLevel": "JAVA_17",
-  "client": ["CameraMixin", "GameRendererMixin", "WorldMixin", "InGameHudMixin"],
+  "client": ["CameraMixin", "MouseMixin", "KeyboardMixin", "GameRendererMixin", "WorldMixin", "InGameHudMixin", "MinecraftClientMixin"],
   "injectors": { "defaultRequire": 1 }
 }

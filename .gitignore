@@ -10,3 +10,5 @@ run/
 hs_err_pid*
 .env
 .env.*
+/logs/
+/crash-reports/

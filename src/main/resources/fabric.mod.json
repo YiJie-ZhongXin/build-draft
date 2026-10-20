@@ -3,7 +3,7 @@
   "id": "builddraft",
   "version": "${version}",
   "name": "筑稿 · Build Draft",
-  "description": "世界内俯视草稿编辑器与建筑投影辅助。",
+  "description": "无碰撞自由视角、贴面草稿设计、多草稿投影与单人世界同材质一键填充。",
   "environment": "client",
   "entrypoints": { "client": ["dev.builddraft.BuildDraftClient"] },
   "mixins": ["builddraft.mixins.json"],

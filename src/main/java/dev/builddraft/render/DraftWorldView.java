@@ -1,8 +1,6 @@
 package dev.builddraft.render;
 
 import dev.builddraft.DraftSession;
-import dev.builddraft.BlockStates;
-import dev.builddraft.model.BlockSpec;
 import dev.builddraft.model.GridPos;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockEntityProvider;
@@ -23,12 +21,8 @@ public final class DraftWorldView implements BlockRenderView {
     private final Map<GridPos, BlockState> states = new HashMap<>();
     private final Map<BlockPos, BlockEntity> entities = new HashMap<>();
     public DraftWorldView(DraftSession draft, ClientWorld world) {
-        this(draft, world, Map.of());
-    }
-    public DraftWorldView(DraftSession draft, ClientWorld world, Map<GridPos, BlockSpec> additions) {
         this.draft = draft; this.world = world;
         draft.plannedBlocks().forEach(p -> states.put(p.relative(), p.state()));
-        additions.forEach((p, spec) -> states.put(p, BlockStates.resolve(spec)));
     }
     @Override public BlockState getBlockState(BlockPos pos) {
         var key = new GridPos(pos.getX() - draft.origin.getX(), pos.getY() - draft.origin.getY(), pos.getZ() - draft.origin.getZ());

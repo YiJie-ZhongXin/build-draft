@@ -11,6 +11,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin {
+    @Inject(method = "render", at = @At("TAIL"))
+    private void builddraft$constructionHint(DrawContext context, float tickDelta, CallbackInfo ci) {
+        dev.builddraft.ConstructionAssist.hud(context);
+    }
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void builddraft$editorCanvas(DrawContext context, float tickDelta, CallbackInfo ci) {
         if (MinecraftClient.getInstance().currentScreen instanceof DraftScreen) ci.cancel();

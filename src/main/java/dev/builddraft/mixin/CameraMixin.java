@@ -1,7 +1,7 @@
 package dev.builddraft.mixin;
 
 import dev.builddraft.BuildDraftClient;
-import dev.builddraft.model.OrbitMath;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.client.render.Camera;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.BlockView;
@@ -18,13 +18,13 @@ public abstract class CameraMixin {
     @Shadow private boolean thirdPerson;
 
     @Inject(method = "update", at = @At("TAIL"))
-    private void builddraft$overhead(BlockView area, Entity entity, boolean thirdPerson, boolean inverseView, float tickDelta, CallbackInfo ci) {
+    private void builddraft$freeCamera(BlockView area, Entity entity, boolean thirdPerson, boolean inverseView, float tickDelta, CallbackInfo ci) {
         var draft = BuildDraftClient.session();
         if (!BuildDraftClient.editing() || draft == null) return;
-        this.thirdPerson = true;
+        this.thirdPerson = false;
         setRotation(draft.yaw, draft.pitch);
-        var eye = OrbitMath.eye(draft.focusX, draft.focusY, draft.focusZ, draft.zoom, draft.yaw, draft.pitch);
-        double shift = draft.viewportOffset * draft.zoom * Math.tan(Math.toRadians(30));
-        setPos(eye.x() + Math.cos(Math.toRadians(draft.yaw)) * shift, eye.y(), eye.z() + Math.sin(Math.toRadians(draft.yaw)) * shift);
+        setPos(MathHelper.lerp(tickDelta, draft.previousCameraX, draft.cameraX),
+            MathHelper.lerp(tickDelta, draft.previousCameraY, draft.cameraY),
+            MathHelper.lerp(tickDelta, draft.previousCameraZ, draft.cameraZ));
     }
 }

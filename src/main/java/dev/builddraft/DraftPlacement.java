@@ -24,25 +24,17 @@ public final class DraftPlacement {
         return spec == null ? null : BlockStates.resolve(spec);
     }
 
-    public static Result resolve(DraftSession draft, DraftPicker.Selection selection, GridPos forced) {
+    public static Result resolve(DraftSession draft, DraftPicker.Selection selection) {
         var client = MinecraftClient.getInstance();
-        if (client.world == null || client.player == null || selection == null && forced == null) return null;
-        BlockPos target = forced == null ? null : draft.worldPos(forced);
-        var plane = draft.rectangleStart != null ? draft.rectanglePlane : draft.lockedPlane;
-        Direction side = plane == null ? Direction.UP : Direction.from(plane.axis() == 0 ? Direction.Axis.X : plane.axis() == 1 ? Direction.Axis.Y : Direction.Axis.Z,
-            plane.offset() < .5 ? Direction.AxisDirection.POSITIVE : Direction.AxisDirection.NEGATIVE);
-        BlockHitResult hit = forced == null
-            ? new BlockHitResult(selection.point(), Direction.valueOf(selection.face().name()), draft.worldPos(selection.block()), false)
-            : new BlockHitResult(Vec3d.ofCenter(target).subtract(Vec3d.of(side.getVector()).multiply(.5)), side, target.offset(side.getOpposite()), false);
+        if (client.world == null || client.player == null || selection == null) return null;
+        BlockHitResult hit = new BlockHitResult(selection.point(), Direction.valueOf(selection.face().name()), draft.worldPos(selection.block()), false);
         ACTIVE.set(draft);
         try {
-            var context = new Context(draft, hit, target);
+            var context = new Context(draft, hit);
             BlockPos pos = context.getBlockPos();
             GridPos relative = new GridPos(pos.getX() - draft.origin.getX(), pos.getY() - draft.origin.getY(), pos.getZ() - draft.origin.getZ());
             if (!draft.validPosition(relative)) return null;
-            BlockState existing = client.world.getBlockState(pos);
-            if (forced == null && !context.canPlace()) return null;
-            if (forced != null && draft.blueprint.blocks().containsKey(relative) && !existing.canReplace(context)) return null;
+            if (!context.canPlace()) return null;
             BlockState state = draft.automaticPlacement ? draft.brush.getBlock().getPlacementState(context) : draft.brush;
             return state == null ? null : new Result(relative, state);
         } catch (RuntimeException e) {
@@ -53,12 +45,10 @@ public final class DraftPlacement {
 
     private static final class Context extends ItemPlacementContext {
         private final DraftSession draft;
-        private final BlockPos forced;
-        Context(DraftSession draft, BlockHitResult hit, BlockPos forced) {
+        Context(DraftSession draft, BlockHitResult hit) {
             super(MinecraftClient.getInstance().player, Hand.MAIN_HAND, new ItemStack(draft.brush.getBlock()), hit);
-            this.draft = draft; this.forced = forced;
+            this.draft = draft;
         }
-        @Override public BlockPos getBlockPos() { return forced == null ? super.getBlockPos() : forced; }
         @Override public Direction getHorizontalPlayerFacing() { return Direction.fromRotation(draft.yaw); }
         @Override public float getPlayerYaw() { return draft.yaw; }
         @Override public Direction getPlayerLookDirection() { return lookDirections()[0]; }

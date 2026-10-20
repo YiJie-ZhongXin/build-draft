@@ -1,17 +1,11 @@
 {
   "category.builddraft": "Build Draft",
-  "key.builddraft.editor": "Toggle top-down draft editor",
-  "key.builddraft.projection": "Toggle blueprint projection",
-  "key.builddraft.anchor": "Move blueprint to crosshair",
+  "key.builddraft.editor": "Toggle free-flight draft editor",
   "key.builddraft.preview": "Solid / ghost preview",
-  "key.builddraft.down": "Editor: layer down",
-  "key.builddraft.up": "Editor: layer up",
-  "key.builddraft.tool": "Editor: single / rectangle tool",
   "key.builddraft.rotate": "Editor: rotate brush",
   "key.builddraft.sample": "Editor: sample block",
   "key.builddraft.palette": "Editor: block library",
-  "key.builddraft.center": "Editor: center camera",
-  "key.builddraft.plane": "Editor: lock / release construction plane",
-  "key.builddraft.extrude": "Editor: extrusion tool",
-  "key.builddraft.move_grid": "Editor: move guide grid"
+  "key.builddraft.center": "Editor: return camera to player",
+  "key.builddraft.library": "Draft manager / construction projection",
+  "key.builddraft.assist": "Construction: modifier + use fills all matching material (singleplayer)"
 }

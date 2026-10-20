@@ -18,7 +18,7 @@ class BlueprintTest {
         assertTrue(b.redo()); assertEquals(LOG, b.blocks().get(POS));
         assertTrue(b.redo()); assertTrue(b.blocks().isEmpty());
     }
-    @Test void rectangleIsOneAtomicHistoryEntry() {
+    @Test void batchEditIsOneAtomicHistoryEntry() {
         Blueprint b = new Blueprint();
         b.put(POS, LOG);
         Map<GridPos, BlockSpec> area = new HashMap<>();
@@ -69,5 +69,17 @@ class BlueprintTest {
         Blueprint b = new Blueprint(); b.put(POS, STONE);
         assertThrows(IllegalArgumentException.class, () -> b.replace(Map.of(new GridPos(Blueprint.MAX_XZ, 0, 0), LOG)));
         assertEquals(Map.of(POS, STONE), b.blocks());
+    }
+    @Test void clearCanBeUndoneAsOneStepWithoutLosingTheEarlierHistory() {
+        Blueprint b = new Blueprint(); b.put(POS, STONE); b.put(new GridPos(1, 0, 0), LOG);
+        var before = Map.copyOf(b.blocks());
+        b.clear(); assertTrue(b.blocks().isEmpty()); assertTrue(b.canUndo());
+        assertTrue(b.undo()); assertEquals(before, b.blocks()); assertTrue(b.canRedo());
+        assertTrue(b.undo()); assertEquals(Map.of(POS, STONE), b.blocks());
+    }
+    @Test void clearingAnEmptyDraftDoesNotConsumeHistoryAndClearCanBeRedone() {
+        Blueprint b = new Blueprint(); long revision = b.revision(); b.clear();
+        assertEquals(revision, b.revision()); assertFalse(b.canUndo());
+        b.put(POS, STONE); b.clear(); b.undo(); b.redo(); assertTrue(b.blocks().isEmpty());
     }
 }

@@ -50,6 +50,31 @@ class BlueprintFilesTest {
         assertEquals(b.blocks(), files.load("house").blocks());
         try (var paths = Files.list(directory)) { assertEquals(1, paths.count()); }
     }
+    @Test void recoveryRetainsWorldOriginAndBlocksInTheSameSnapshot() throws Exception {
+        var files = new BlueprintFiles(directory);
+        var blueprint = new Blueprint();
+        blueprint.put(new GridPos(-20, -10, 60), new BlockSpec("minecraft:oak_log", Map.of("axis", "z")));
+        var origin = new GridPos(1234, -60, -5678);
+        files.save("session", blueprint, origin);
+        var loaded = files.loadSnapshot("session");
+        assertEquals(origin, loaded.origin());
+        assertEquals(blueprint.blocks(), loaded.blueprint().blocks());
+        assertEquals(blueprint.blocks(), files.load("session").blocks());
+    }
+    @Test void legacyBlueprintsLoadWithoutInventingARecoveryOrigin() throws Exception {
+        var files = new BlueprintFiles(directory);
+        files.save("legacy", new Blueprint());
+        assertNull(files.loadSnapshot("legacy").origin());
+    }
+    @Test void invalidRecoveryOriginsNeverOverwriteThePreviousSnapshot() throws Exception {
+        var files = new BlueprintFiles(directory);
+        files.save("session", new Blueprint(), new GridPos(100, 64, 200));
+        var before = Files.readString(directory.resolve("session.json"));
+        assertThrows(IllegalArgumentException.class, () -> files.save("session", new Blueprint(), new GridPos(GridWindow.WORLD_LIMIT, 64, 0)));
+        assertEquals(before, Files.readString(directory.resolve("session.json")));
+        Files.writeString(directory.resolve("session.json"), before.replace("100", "100.5"));
+        assertThrows(IOException.class, () -> files.loadSnapshot("session"));
+    }
     private void writeBlocks(String entries) throws IOException {
         Files.writeString(directory.resolve("bad.json"), "{\"format\":\"builddraft\",\"version\":1,\"blocks\":[" + entries + "]}");
     }
